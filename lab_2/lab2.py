@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-directory = 'D:\Desktop\KPI\Kpi_2023\sem_2\AD\lab2\csv_files'
+directory = 'D:\Desktop\KPI\Kpi_2023\sem_2\AD\lab_2\csv_files'
 
 def extract(directory):
   files = os.listdir(directory)
@@ -35,17 +35,20 @@ def min_vhi(df, area_name, year):
 def max_vhi(df, area_name, year):
   filtered_df = df[(df["area"] == area_name) & (df["Year"] == year)]
   maximum_vhi = filtered_df["VHI"].max()
+  
   return filtered_df[filtered_df["VHI"] == maximum_vhi]
 
 '''(df.VHI <= 15)'''
 def find_extrim(df, area_name, precent):
-  df_drought = df[(df["area"] == area_name)]
-  years = list(df['Year'].unique())
-  res = []
-  for year in years:
-    if not df[(df["Year"] == year) & (df.VHI <= precent)].empty:
-      res.append(year)
+  # df_drought = df[(df["area"] == area_name)]
+  # years = list(df['Year'].unique())
+  # res = []
+  # for year in years:
+  #   if not df[(df["Year"] == year) & (df.VHI <= precent)].empty:
+  #     res.append(year)
+  res = df[(df.VHI <= precent)]["Year"].unique()
   return res
+  
 
 df = change_area(extract(directory))
 print(min_vhi(df, "Chernihiv", 2005))
