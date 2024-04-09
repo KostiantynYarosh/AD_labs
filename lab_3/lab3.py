@@ -53,14 +53,14 @@ class StockExample(server.App):
         },
         {
             "type": 'text',
-            "label": 'years', 
-            "key": 'Year', 
-            "value": "1985",
+            "label": 'year_range', 
+            "key": 'year_range', 
+            "value": "1985-1988",
             "action_id": "update_data"
         },
         {
             "type": 'text',
-            "label": 'weeks_ranges', 
+            "label": 'weeks_range', 
             "key": 'week_range', 
             "value": "5-10",
             "action_id": "update_data"
@@ -91,18 +91,19 @@ class StockExample(server.App):
 
     def getData(self, params):
         start_week, end_week = map(int, params['week_range'].split('-'))
-        print(start_week, end_week)
-        print(params)
-        print([(df["area"] == params['Area']) & (df["Year"] == int(params['Year']))])
+        start_year, end_year = map(int, params['year_range'].split('-'))
         plot_data = df[(df["area"] == params['Area']) & 
-                        (df["Year"] == int(params['Year'])) & 
-                        (df["Week"].between(start_week, end_week))]
+                       (df["Year"].between(start_year, end_year)) & 
+                       (df["Week"].between(start_week, end_week))][["Year", "Week", params['ticker']]]
+        print(plot_data.columns)
+        plot_data['Date'] = pd.to_datetime(plot_data['Year'].astype(str) + plot_data['Week'].astype(str) + '0', format='%Y%W%w')
+        plot_data = plot_data.drop(['Year', 'Week'], axis=1)
         return plot_data
 
     def getPlot(self, params):
         selected_column = params['ticker']
         plot_data = self.getData(params)
-        plot = plot_data.plot(x='Week', y=selected_column)
+        plot = plot_data.plot(x='Date', y=selected_column)
         fig = plot.get_figure()
         return fig
 
