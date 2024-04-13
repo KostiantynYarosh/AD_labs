@@ -93,8 +93,10 @@ class StockExample(server.App):
         start_week, end_week = map(int, params['week_range'].split('-'))
         start_year, end_year = map(int, params['year_range'].split('-'))
         plot_data = df[(df["area"] == params['Area']) & 
-                       (df["Year"].between(start_year, end_year)) & 
-                       (df["Week"].between(start_week, end_week))][["Year", "Week", params['ticker']]]
+                       (df["Year"].between(start_year, end_year))][["Year", "Week", params['ticker']]]
+        plot_data = plot_data[~((plot_data['Year'] == start_year) & (plot_data['Week'] < start_week))]
+        plot_data = plot_data[~((plot_data['Year'] == end_year) & (plot_data['Week'] > end_week))]
+        print(plot_data)
         print(plot_data.columns)
         plot_data['Date'] = pd.to_datetime(plot_data['Year'].astype(str) + plot_data['Week'].astype(str) + '0', format='%Y%W%w')
         plot_data = plot_data.drop(['Year', 'Week'], axis=1)
